@@ -1,6 +1,6 @@
 [project]
 name = "calc"
-version = "2026.6.8.2"
+version = "2026.6.8.3"
 description = "Commandline calculator utility with basic python math and statistics functions."
 readme = "README.md"
 authors = [{name = "Travis L. Seymour, PhD", email = "nogard@ucsc.edu"}]
