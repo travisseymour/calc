@@ -1,6 +1,6 @@
 [project]
 name = "calc"
-version = "2026.6.8.4"
+version = "2026.6.8.5"
 description = "Commandline calculator utility with basic python math and statistics functions."
 readme = "README.md"
 authors = [{name = "Travis L. Seymour, PhD", email = "nogard@ucsc.edu"}]
@@ -27,9 +27,6 @@ build-backend = "hatchling.build"
 
 [tool.hatch.build.targets.wheel]
 packages = ["calc"]
-
-[tool.hatch.build.targets.wheel.force-include]
-"calc/resources" = "calc/resources"
 
 [dependency-groups]
 dev = [
