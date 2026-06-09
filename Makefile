@@ -22,7 +22,7 @@ install:
 uninstall:
 	@if [[ -n "$$VIRTUAL_ENV" ]]; then \
 	    echo "Uninstalling calc dependencies from virtual environment $$VIRTUAL_ENV"; \
-	    pip uninstall GEMS; \
+	    pip uninstall calc; \
 
 	else \
 	    echo "Not in a virtual environment, nothing to uninstall."; \
