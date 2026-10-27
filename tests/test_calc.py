@@ -1,13 +1,21 @@
 import math
 import statistics
+import subprocess
+import sys
 
 import pytest
-from typer.testing import CliRunner
 
-from calc.main import FUNCTIONS, NAMES, app
+from calc.main import FUNCTIONS, NAMES
 from simpleeval import simple_eval
 
-runner = CliRunner()
+
+def run_calc(*args: str) -> subprocess.CompletedProcess:
+    """Run the calc CLI with the given arguments."""
+    return subprocess.run(
+        [sys.executable, "-m", "calc.main", *args],
+        capture_output=True,
+        text=True,
+    )
 
 
 def evaluate(expression: str):
@@ -231,30 +239,29 @@ class TestErrorHandling:
 
 class TestMainFunction:
     def test_main_no_args(self):
-        result = runner.invoke(app, [])
-        # Exit code 2 = missing required argument, but help is shown
-        assert result.exit_code == 2
-        assert "Usage:" in result.output
+        result = run_calc()
+        assert result.returncode == 0
+        assert "Usage:" in result.stdout or "usage:" in result.stdout.lower()
 
     def test_main_help(self):
-        result = runner.invoke(app, ["--help"])
-        assert result.exit_code == 0
-        assert "Mathematical expression" in result.output
+        result = run_calc("--help")
+        assert result.returncode == 0
+        assert "Mathematical expression" in result.stdout
 
     def test_main_valid_expression(self):
-        result = runner.invoke(app, ["2 + 2"])
-        assert result.exit_code == 0
-        assert result.output.strip() == "4"
+        result = run_calc("2 + 2")
+        assert result.returncode == 0
+        assert result.stdout.strip() == "4"
 
     def test_main_invalid_expression(self):
-        result = runner.invoke(app, ["invalid_expr"])
-        assert result.exit_code == 1
-        assert "Error" in result.output
+        result = run_calc("invalid_expr")
+        assert result.returncode == 1
+        assert "Error" in result.stdout
 
     def test_main_list_functions(self):
-        result = runner.invoke(app, ["--list"])
-        assert result.exit_code == 0
-        assert "Available functions:" in result.output
+        result = run_calc("--list")
+        assert result.returncode == 0
+        assert "Available functions:" in result.stdout
 
 
 class TestSecurity:

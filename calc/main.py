@@ -1,28 +1,14 @@
-"""
-Calc: Commandline calculator utility with basic python math and statistics functions.
-Copyright (C) 2026  Travis L. Seymour, PhD
-
-This program is free software: you can redistribute it and/or modify
-it under the terms of the GNU General Public License as published by
-the Free Software Foundation, either version 3 of the License, or
-(at your option) any later version.
-
-This program is distributed in the hope that it will be useful,
-but WITHOUT ANY WARRANTY; without even the implied warranty of
-MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
-GNU General Public License for more details.
-
-You should have received a copy of the GNU General Public License
-along with this program.  If not, see <https://www.gnu.org/licenses/>.
-"""
+# SPDX-FileCopyrightText: Calc | Copyright (c) 2026 Travis L. Seymour, PhD <nogard@ucsc.edu>
+# SPDX-License-Identifier: GPL-3.0-or-later
 
 import math
 import statistics
-from typing import Annotated, Optional
+import sys
+from importlib.metadata import version
+from typing import Annotated
 
-import typer
+import cyclopts
 from simpleeval import simple_eval
-
 
 # Build safe function dict from math and statistics modules
 FUNCTIONS = {
@@ -77,41 +63,17 @@ NAMES = {
     "inf": math.inf,
 }
 
-
-app = typer.Typer(
+app = cyclopts.App(
     help="Commandline calculator with math and statistics functions.",
-    add_completion=False,
-    no_args_is_help=True,
+    version=f"calc {version('calc')}",
 )
 
 
-def version_callback(value: bool):
-    if value:
-        from importlib.metadata import version
-
-        print(f"calc {version('calc')}")
-        raise typer.Exit()
-
-
-def list_functions_callback(value: bool):
-    if value:
-        print("Available functions:")
-        print(f"  Math: {', '.join(sorted(k for k in FUNCTIONS.keys() if not k[0].islower() or k in dir(math)))}")
-        print("  Stats: mean, median, mode, stdev, variance, pstdev, pvariance, harmonic_mean, geometric_mean")
-        print(f"Constants: {', '.join(NAMES.keys())}")
-        raise typer.Exit()
-
-
-@app.command()
+@app.default
 def main(
-    expression: Annotated[str, typer.Argument(help="Mathematical expression to evaluate")],
-    version: Annotated[
-        Optional[bool], typer.Option("--version", "-v", callback=version_callback, is_eager=True, help="Show version")
-    ] = None,
-    list_functions: Annotated[
-        Optional[bool],
-        typer.Option("--list", "-l", callback=list_functions_callback, is_eager=True, help="List available functions"),
-    ] = None,
+    expression: Annotated[str, cyclopts.Parameter(help="Mathematical expression to evaluate")] = "",
+    *,
+    list_functions: Annotated[bool, cyclopts.Parameter("--list", "-l", help="List available functions")] = False,
 ):
     """
     Evaluate a mathematical expression.
@@ -121,12 +83,23 @@ def main(
         calc "sqrt(2) * pi"
         calc "mean(1, 2, 3, 4, 5)"
     """
+    if list_functions:
+        print("Available functions:")
+        print(f"  Math: {', '.join(sorted(k for k in FUNCTIONS.keys() if not k[0].islower() or k in dir(math)))}")
+        print("  Stats: mean, median, mode, stdev, variance, pstdev, pvariance, harmonic_mean, geometric_mean")
+        print(f"Constants: {', '.join(NAMES.keys())}")
+        return
+
+    if not expression:
+        app.help_print()
+        sys.exit(0)
+
     try:
         result = simple_eval(expression, functions=FUNCTIONS, names=NAMES)
         print(result)
     except Exception as e:
         print(f"Error: {e}")
-        raise typer.Exit(1)
+        sys.exit(1)
 
 
 if __name__ == "__main__":
