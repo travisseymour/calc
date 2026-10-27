@@ -73,7 +73,7 @@ app = cyclopts.App(
 def main(
     expression: Annotated[str, cyclopts.Parameter(help="Mathematical expression to evaluate")] = "",
     *,
-    list_functions: Annotated[bool, cyclopts.Parameter("--list", "-l", help="List available functions")] = False,
+    list_functions: Annotated[bool, cyclopts.Parameter(name=["--list", "-l"], help="List available functions")] = False,
 ):
     """
     Evaluate a mathematical expression.
