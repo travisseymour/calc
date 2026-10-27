@@ -1,6 +1,6 @@
 [project]
 name = "calc"
-version = "2026.10.26.3"
+version = "2026.10.26.4"
 description = "Commandline calculator utility with basic python math and statistics functions. This is kind of a silly app!"
 readme = "README.md"
 authors = [{name = "Travis L. Seymour, PhD", email = "nogard@ucsc.edu"}]
@@ -19,7 +19,7 @@ dev = ["ruff>=0.4", "pytest>=8.0"]
 "Documentation" = "https://github.com/travisseymour/calc#readme"
 
 [project.scripts]
-calc = "calc.main:main"
+calc = "calc.main:app"
 
 [build-system]
 requires = ["hatchling"]
