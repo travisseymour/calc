@@ -10,6 +10,8 @@ from typing import Annotated
 import cyclopts
 from simpleeval import simple_eval
 
+from calc.decompose import print_decomposition
+
 # Build safe function dict from math and statistics modules
 FUNCTIONS = {
     # Math functions
@@ -74,6 +76,7 @@ def main(
     expression: Annotated[str, cyclopts.Parameter(help="Mathematical expression to evaluate")] = "",
     *,
     list_functions: Annotated[bool, cyclopts.Parameter(name=["--list", "-l"], help="List available functions")] = False,
+    verbose: Annotated[bool, cyclopts.Parameter(name=["--verbose", "-v"], help="Show evaluation steps")] = False,
 ):
     """
     Evaluate a mathematical expression.
@@ -95,8 +98,11 @@ def main(
         sys.exit(0)
 
     try:
-        result = simple_eval(expression, functions=FUNCTIONS, names=NAMES)
-        print(result)
+        if verbose:
+            print_decomposition(expression, FUNCTIONS, NAMES)
+        else:
+            result = simple_eval(expression, functions=FUNCTIONS, names=NAMES)
+            print(result)
     except Exception as e:
         print(f"Error: {e}")
         sys.exit(1)
